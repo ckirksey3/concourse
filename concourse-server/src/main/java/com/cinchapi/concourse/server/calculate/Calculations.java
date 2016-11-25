@@ -44,6 +44,30 @@ public final class Calculations {
             return Numbers.add(running, value);
         };
     }
+    
+    /**
+     * Return the canonical {@link KeyCalculation calculation} for finding the
+     * max over an entire field.
+     * 
+     * @return the function
+     */
+    public static KeyCalculation maxKey() {
+        return (running, value, records) -> {
+            return Numbers.max(running, value);
+        };
+    }
+    
+    /**
+     * Return the canonical {@link KeyRecordCalculation} for finding the max
+     * over all the values store for a key in a record.
+     * 
+     * @return the function
+     */
+    public static KeyRecordCalculation maxKeyRecord() {
+        return (running, value) -> {
+            return Numbers.max(running, value);
+        };
+    }
 
     /**
      * Return the canonical {@link KeyRecordCalculation} for finding the sum

@@ -601,4 +601,57 @@ final class Operations {
 
     private Operations() {/* no-op */}
 
+    /**
+     * Join the {@link AtomicOperation atomic} operation to compute the max
+     * across the {@code key} at {@code timestamp}.
+     * 
+     * @param key the field name
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to join
+     * @return the sum
+     */
+    public static Number maxKeyAtomic(String key, long timestamp,
+            AtomicOperation atomic) {
+        return calculateKeyAtomic(key, timestamp, 0, atomic,
+                Calculations.maxKey());
+    }
+    
+    /**
+     * Join the {@link AtomicOperation atomic} operation to compute the max
+     * across all the values stored for {@code key} in {@code record} at
+     * {@code timestamp}.
+     * 
+     * @param key the field name
+     * @param record the record id
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to join
+     * @return the sum
+     */
+    public static Number maxKeyRecordAtomic(String key, long record,
+            long timestamp, AtomicOperation atomic) {
+        return calculateKeyRecordAtomic(key, record, timestamp, 0, atomic,
+                Calculations.maxKeyRecord());
+    }
+    
+    /**
+     * Join the {@link AtomicOperation atomic} operation to compute the max
+     * across all the values stored for {@code key} in each of the
+     * {@code records} at {@code timestamp}.
+     * 
+     * @param key the field name
+     * @param records the record ids
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to join
+     * @return the sum
+     */
+    public static Number maxKeyRecordsAtomic(String key,
+            Collection<Long> records, long timestamp, AtomicOperation atomic) {
+        Number sum = 0;
+        for (long record : records) {
+            sum = calculateKeyRecordAtomic(key, record, timestamp, sum, atomic,
+                    Calculations.maxKeyRecord());
+        }
+        return sum;
+    }
+
 }

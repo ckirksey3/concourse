@@ -848,6 +848,390 @@ public class ConcourseServer extends BaseConcourseServer
 
     @Override
     @ThrowsThriftExceptions
+    public TObject maxKey(String key, AccessToken creds,
+            TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyAtomic(key, Time.NONE, atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    public TObject maxKeyTimestr(String key, String timestamp,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws SecurityException, TransactionException, TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyAtomic(key,
+                        NaturalLanguage.parseMicros(timestamp), atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    public TObject maxKeyRecordTimestr(String key, long record,
+            String timestamp, AccessToken creds, TransactionToken transaction,
+            String environment)
+            throws SecurityException, TransactionException, TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordAtomic(key, record,
+                        NaturalLanguage.parseMicros(timestamp), atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    public TObject maxKeyRecordsTimestr(String key, List<Long> records,
+            String timestamp, AccessToken creds, TransactionToken transaction,
+            String environment)
+            throws SecurityException, TransactionException, TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordsAtomic(key, records,
+                        NaturalLanguage.parseMicros(timestamp), atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    public TObject maxKeyCriteriaTimestr(String key, TCriteria criteria,
+            String timestamp, AccessToken creds, TransactionToken transaction,
+            String environment)
+            throws SecurityException, TransactionException, TException {
+        checkAccess(creds, transaction);
+        Queue<PostfixNotationSymbol> queue = Operations
+                .convertCriteriaToQueue(criteria);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                Operations.findAtomic(queue, stack, atomic);
+                Set<Long> records = stack.pop();
+                max = Operations.maxKeyRecordsAtomic(key, records,
+                        NaturalLanguage.parseMicros(timestamp), atomic);
+            }
+            catch (AtomicStateException e) {
+                max = 0;
+                atomic = null;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    public TObject maxKeyCclTimestr(String key, String ccl, String timestamp,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws SecurityException, TransactionException, ParseException,
+            TException {
+        checkAccess(creds, transaction);
+        try {
+            Queue<PostfixNotationSymbol> queue = Parser.toPostfixNotation(ccl);
+            AtomicSupport store = getStore(transaction, environment);
+            AtomicOperation atomic = null;
+            Number max = 0;
+            while (atomic == null || !atomic.commit()) {
+                atomic = store.startAtomicOperation();
+                try {
+                    Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                    Operations.findAtomic(queue, stack, atomic);
+                    Set<Long> records = stack.pop();
+                    max = Operations.maxKeyRecordsAtomic(key, records,
+                            NaturalLanguage.parseMicros(timestamp), atomic);
+                }
+                catch (AtomicStateException e) {
+                    max = 0;
+                    atomic = null;
+                }
+            }
+            return Convert.javaToThrift(max);
+        }
+        catch (Exception e) {
+            throw new ParseException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyCcl(String key, String ccl, AccessToken creds,
+            TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        try {
+            Queue<PostfixNotationSymbol> queue = Parser.toPostfixNotation(ccl);
+            AtomicSupport store = getStore(transaction, environment);
+            AtomicOperation atomic = null;
+            Number max = 0;
+            while (atomic == null || !atomic.commit()) {
+                atomic = store.startAtomicOperation();
+                try {
+                    Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                    Operations.findAtomic(queue, stack, atomic);
+                    Set<Long> records = stack.pop();
+                    max = Operations.maxKeyRecordsAtomic(key, records,
+                            Time.NONE, atomic);
+                }
+                catch (AtomicStateException e) {
+                    max = 0;
+                    atomic = null;
+                }
+            }
+            return Convert.javaToThrift(max);
+        }
+        catch (Exception e) {
+            throw new ParseException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyCclTime(String key, String ccl, long timestamp,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        try {
+            Queue<PostfixNotationSymbol> queue = Parser.toPostfixNotation(ccl);
+            AtomicSupport store = getStore(transaction, environment);
+            AtomicOperation atomic = null;
+            Number max = 0;
+            while (atomic == null || !atomic.commit()) {
+                atomic = store.startAtomicOperation();
+                try {
+                    Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                    Operations.findAtomic(queue, stack, atomic);
+                    Set<Long> records = stack.pop();
+                    max = Operations.maxKeyRecordsAtomic(key, records,
+                            timestamp, atomic);
+                }
+                catch (AtomicStateException e) {
+                    max = 0;
+                    atomic = null;
+                }
+            }
+            return Convert.javaToThrift(max);
+        }
+        catch (Exception e) {
+            throw new ParseException(e.getMessage());
+        }
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyCriteria(String key, TCriteria criteria,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        Queue<PostfixNotationSymbol> queue = Operations
+                .convertCriteriaToQueue(criteria);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                Operations.findAtomic(queue, stack, atomic);
+                Set<Long> records = stack.pop();
+                max = Operations.maxKeyRecordsAtomic(key, records, Time.NONE,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                max = 0;
+                atomic = null;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyCriteriaTime(String key, TCriteria criteria,
+            long timestamp, AccessToken creds, TransactionToken transaction,
+            String environment) throws TException {
+        checkAccess(creds, transaction);
+        Queue<PostfixNotationSymbol> queue = Operations
+                .convertCriteriaToQueue(criteria);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
+                Operations.findAtomic(queue, stack, atomic);
+                Set<Long> records = stack.pop();
+                max = Operations.maxKeyRecordsAtomic(key, records, timestamp,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                max = 0;
+                atomic = null;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyRecord(String key, long record, AccessToken creds,
+            TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordAtomic(key, record, Time.NONE,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyRecords(String key, List<Long> records,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordsAtomic(key, records, Time.NONE,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyRecordsTime(String key, List<Long> records,
+            long timestamp, AccessToken creds, TransactionToken transaction,
+            String environment) throws TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordsAtomic(key, records, timestamp,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyRecordTime(String key, long record, long timestamp,
+            AccessToken creds, TransactionToken transaction, String environment)
+            throws TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyRecordAtomic(key, record, timestamp,
+                        atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
+    public TObject maxKeyTime(String key, long timestamp, AccessToken creds,
+            TransactionToken transaction, String environment)
+            throws SecurityException, TransactionException, TException {
+        checkAccess(creds, transaction);
+        AtomicSupport store = getStore(transaction, environment);
+        AtomicOperation atomic = null;
+        Number max = 0;
+        while (atomic == null || !atomic.commit()) {
+            atomic = store.startAtomicOperation();
+            try {
+                max = Operations.maxKeyAtomic(key, timestamp, atomic);
+            }
+            catch (AtomicStateException e) {
+                atomic = null;
+                max = 0;
+            }
+        }
+        return Convert.javaToThrift(max);
+    }
+
+    @Override
+    @ThrowsThriftExceptions
     public Map<TObject, Set<Long>> browseKey(String key, AccessToken creds,
             TransactionToken transaction, String environment)
             throws TException {
@@ -3920,7 +4304,7 @@ public class ConcourseServer extends BaseConcourseServer
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                sum = Operations.sumKeyAtomic(key, Time.NONE, atomic);
+                sum = Operations.maxKeyAtomic(key, Time.NONE, atomic);
             }
             catch (AtomicStateException e) {
                 atomic = null;
