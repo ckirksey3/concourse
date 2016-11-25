@@ -608,7 +608,7 @@ final class Operations {
      * @param key the field name
      * @param timestamp the selection timestamp
      * @param atomic the {@link AtomicOperation} to join
-     * @return the sum
+     * @return the max
      */
     public static Number maxKeyAtomic(String key, long timestamp,
             AtomicOperation atomic) {
@@ -625,7 +625,7 @@ final class Operations {
      * @param record the record id
      * @param timestamp the selection timestamp
      * @param atomic the {@link AtomicOperation} to join
-     * @return the sum
+     * @return the max
      */
     public static Number maxKeyRecordAtomic(String key, long record,
             long timestamp, AtomicOperation atomic) {
@@ -642,7 +642,7 @@ final class Operations {
      * @param records the record ids
      * @param timestamp the selection timestamp
      * @param atomic the {@link AtomicOperation} to join
-     * @return the sum
+     * @return the max
      */
     public static Number maxKeyRecordsAtomic(String key,
             Collection<Long> records, long timestamp, AtomicOperation atomic) {
