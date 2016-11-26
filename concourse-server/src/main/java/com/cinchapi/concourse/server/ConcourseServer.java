@@ -1013,8 +1013,9 @@ public class ConcourseServer extends BaseConcourseServer
                     Deque<Set<Long>> stack = new ArrayDeque<Set<Long>>();
                     Operations.findAtomic(queue, stack, atomic);
                     Set<Long> records = stack.pop();
-                    min = Operations.minKeyRecordsAtomic(key, records,
+                    Number value = Operations.minKeyRecordsAtomic(key, records,
                             Time.NONE, atomic);
+                    min = value;
                 }
                 catch (AtomicStateException e) {
                     min = 0;

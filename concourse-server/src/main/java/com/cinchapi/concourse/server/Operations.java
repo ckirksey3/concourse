@@ -600,7 +600,7 @@ final class Operations {
     }
 
     private Operations() {/* no-op */}
-    
+
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the max
      * across the {@code key} at {@code timestamp}.
@@ -612,10 +612,10 @@ final class Operations {
      */
     public static Number minKeyAtomic(String key, long timestamp,
             AtomicOperation atomic) {
-        return calculateKeyAtomic(key, timestamp, 0, atomic,
+        return calculateKeyAtomic(key, timestamp, Long.MAX_VALUE, atomic,
                 Calculations.minKey());
     }
-    
+
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the min
      * across all the values stored for {@code key} in {@code record} at
@@ -629,10 +629,10 @@ final class Operations {
      */
     public static Number minKeyRecordAtomic(String key, long record,
             long timestamp, AtomicOperation atomic) {
-        return calculateKeyRecordAtomic(key, record, timestamp, 0, atomic,
+        return calculateKeyRecordAtomic(key, record, timestamp, Long.MAX_VALUE, atomic,
                 Calculations.minKeyRecord());
     }
-    
+
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the min
      * across all the values stored for {@code key} in each of the
@@ -646,12 +646,12 @@ final class Operations {
      */
     public static Number minKeyRecordsAtomic(String key,
             Collection<Long> records, long timestamp, AtomicOperation atomic) {
-        Number sum = 0;
+        Number min = Long.MAX_VALUE;
         for (long record : records) {
-            sum = calculateKeyRecordAtomic(key, record, timestamp, sum, atomic,
-                    Calculations.minKeyRecord());
+            min = calculateKeyRecordAtomic(key, record,
+                    timestamp, min, atomic, Calculations.minKeyRecord());
         }
-        return sum;
+        return min;
     }
 
 }
