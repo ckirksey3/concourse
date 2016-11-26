@@ -612,10 +612,10 @@ final class Operations {
      */
     public static Number maxKeyAtomic(String key, long timestamp,
             AtomicOperation atomic) {
-        return calculateKeyAtomic(key, timestamp, 0, atomic,
+        return calculateKeyAtomic(key, timestamp, Long.MIN_VALUE, atomic,
                 Calculations.maxKey());
     }
-    
+
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the max
      * across all the values stored for {@code key} in {@code record} at
@@ -629,10 +629,10 @@ final class Operations {
      */
     public static Number maxKeyRecordAtomic(String key, long record,
             long timestamp, AtomicOperation atomic) {
-        return calculateKeyRecordAtomic(key, record, timestamp, 0, atomic,
-                Calculations.maxKeyRecord());
+        return calculateKeyRecordAtomic(key, record, timestamp, Long.MIN_VALUE,
+                atomic, Calculations.maxKeyRecord());
     }
-    
+
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the max
      * across all the values stored for {@code key} in each of the
@@ -646,12 +646,12 @@ final class Operations {
      */
     public static Number maxKeyRecordsAtomic(String key,
             Collection<Long> records, long timestamp, AtomicOperation atomic) {
-        Number sum = 0;
+        Number max = Long.MIN_VALUE;
         for (long record : records) {
-            sum = calculateKeyRecordAtomic(key, record, timestamp, sum, atomic,
+            max = calculateKeyRecordAtomic(key, record, timestamp, max, atomic,
                     Calculations.maxKeyRecord());
         }
-        return sum;
+        return max;
     }
 
 }
