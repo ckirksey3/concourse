@@ -602,21 +602,6 @@ final class Operations {
     private Operations() {/* no-op */}
 
     /**
-     * Join the {@link AtomicOperation atomic} operation to compute the max
-     * across the {@code key} at {@code timestamp}.
-     * 
-     * @param key the field name
-     * @param timestamp the selection timestamp
-     * @param atomic the {@link AtomicOperation} to join
-     * @return the min
-     */
-    public static Number minKeyAtomic(String key, long timestamp,
-            AtomicOperation atomic) {
-        return calculateKeyAtomic(key, timestamp, Long.MAX_VALUE, atomic,
-                Calculations.minKey());
-    }
-
-    /**
      * Join the {@link AtomicOperation atomic} operation to compute the min
      * across all the values stored for {@code key} in {@code record} at
      * {@code timestamp}.

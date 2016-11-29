@@ -845,7 +845,7 @@ public class ConcourseServer extends BaseConcourseServer
         }
         return Convert.javaToThrift(average);
     }
-    
+
     @Override
     @ThrowsThriftExceptions
     public TObject minKey(String key, AccessToken creds,
@@ -854,18 +854,22 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number min = 0;
+        TObject min = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                min = Operations.minKeyAtomic(key, Time.NONE, atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key);
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    min = entry.getKey();
+                    break;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                min = 0;
+                min = null;
             }
         }
-        return Convert.javaToThrift(min);
+        return min;
     }
 
     @Override
@@ -875,19 +879,23 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number min = 0;
+        TObject min = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                min = Operations.minKeyAtomic(key,
-                        NaturalLanguage.parseMicros(timestamp), atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key,
+                        NaturalLanguage.parseMicros(timestamp));
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    min = entry.getKey();
+                    break;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                min = 0;
+                min = null;
             }
         }
-        return Convert.javaToThrift(min);
+        return min;
     }
 
     @Override
@@ -1217,18 +1225,22 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number min = 0;
+        TObject min = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                min = Operations.minKeyAtomic(key, timestamp, atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key, timestamp);
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    min = entry.getKey();
+                    break;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                min = 0;
+                min = null;
             }
         }
-        return Convert.javaToThrift(min);
+        return min;
     }
 
     @Override

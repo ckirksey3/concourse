@@ -90,17 +90,6 @@ public class CalculateMinTest extends ConcourseIntegrationTest {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testMinKeyException() {
-        String key = "age";
-        client.add("name", "foo", 1);
-        client.add(key, 30, 1);
-        client.add(key, "fifteen", 1);
-        client.add("name", "bar", 2);
-        client.add(key, 15, 2);
-        client.calculate().min(key);
-    }
-
     @Test
     public void testMinKeyRecord() {
         String key = "age";
@@ -203,16 +192,4 @@ public class CalculateMinTest extends ConcourseIntegrationTest {
         Number expected = client.calculate().min(key, timestamp);
         Assert.assertEquals(expected, actual);
     }
-
-    @Test(expected = RuntimeException.class)
-    public void testMinKeyTimeException() {
-        String key = "age";
-        client.add("name", "foo", 1);
-        client.add(key, 30, 1);
-        client.add(key, "fifteen", 1);
-        client.add("name", "bar", 2);
-        client.add(key, 15, 2);
-        client.calculate().min(key, Timestamp.now());
-    }
-
 }
