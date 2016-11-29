@@ -859,10 +859,7 @@ public class ConcourseServer extends BaseConcourseServer
             atomic = store.startAtomicOperation();
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key);
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    min = entry.getKey();
-                    break;
-                }
+                min = Iterables.getFirst(data.keySet(), min);
             }
             catch (AtomicStateException e) {
                 atomic = null;
@@ -885,10 +882,7 @@ public class ConcourseServer extends BaseConcourseServer
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key,
                         NaturalLanguage.parseMicros(timestamp));
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    min = entry.getKey();
-                    break;
-                }
+                min = Iterables.getFirst(data.keySet(), min);
             }
             catch (AtomicStateException e) {
                 atomic = null;
@@ -1230,10 +1224,7 @@ public class ConcourseServer extends BaseConcourseServer
             atomic = store.startAtomicOperation();
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key, timestamp);
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    min = entry.getKey();
-                    break;
-                }
+                min = Iterables.getFirst(data.keySet(), min);
             }
             catch (AtomicStateException e) {
                 atomic = null;
