@@ -854,18 +854,28 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number max = 0;
+        TObject max = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                max = Operations.maxKeyAtomic(key, Time.NONE, atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key);
+                int size = data.size();
+                int c = 0;
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    if(c == size - 1) {
+                        TObject tobject = entry.getKey();
+                        max = tobject;
+                        break;
+                    }
+                    c++;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                max = 0;
+                max = null;
             }
         }
-        return Convert.javaToThrift(max);
+        return max;
     }
 
     @Override
@@ -875,19 +885,29 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number max = 0;
+        TObject max = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                max = Operations.maxKeyAtomic(key,
-                        NaturalLanguage.parseMicros(timestamp), atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key,
+                        NaturalLanguage.parseMicros(timestamp));
+                int size = data.size();
+                int c = 0;
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    if(c == size - 1) {
+                        TObject tobject = entry.getKey();
+                        max = tobject;
+                        break;
+                    }
+                    c++;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                max = 0;
+                max = null;
             }
         }
-        return Convert.javaToThrift(max);
+        return max;
     }
 
     @Override
@@ -1216,18 +1236,28 @@ public class ConcourseServer extends BaseConcourseServer
         checkAccess(creds, transaction);
         AtomicSupport store = getStore(transaction, environment);
         AtomicOperation atomic = null;
-        Number max = 0;
+        TObject max = null;
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                max = Operations.maxKeyAtomic(key, timestamp, atomic);
+                Map<TObject, Set<Long>> data = atomic.browse(key, timestamp);
+                int size = data.size();
+                int c = 0;
+                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+                    if(c == size - 1) {
+                        TObject tobject = entry.getKey();
+                        max = tobject;
+                        break;
+                    }
+                    c++;
+                }
             }
             catch (AtomicStateException e) {
                 atomic = null;
-                max = 0;
+                max = null;
             }
         }
-        return Convert.javaToThrift(max);
+        return max;
     }
 
     @Override
@@ -4304,7 +4334,7 @@ public class ConcourseServer extends BaseConcourseServer
         while (atomic == null || !atomic.commit()) {
             atomic = store.startAtomicOperation();
             try {
-                sum = Operations.maxKeyAtomic(key, Time.NONE, atomic);
+                sum = Operations.sumKeyAtomic(key, Time.NONE, atomic);
             }
             catch (AtomicStateException e) {
                 atomic = null;

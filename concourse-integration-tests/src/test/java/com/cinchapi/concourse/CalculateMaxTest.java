@@ -93,17 +93,6 @@ public class CalculateMaxTest extends ConcourseIntegrationTest{
         Assert.assertEquals(expected, actual);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testMaxKeyException() {
-        String key = "age";
-        client.add("name", "foo", 1);
-        client.add(key, 30, 1);
-        client.add(key, "fifteen", 1);
-        client.add("name", "bar", 2);
-        client.add(key, 15, 2);
-        client.calculate().max(key);
-    }
-
     @Test
     public void testMaxKeyRecord() {
         String key = "age";
@@ -205,16 +194,5 @@ public class CalculateMaxTest extends ConcourseIntegrationTest{
         client.add(key, 100, 2);
         Number expected = client.calculate().max(key, timestamp);
         Assert.assertEquals(expected, actual);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testMaxKeyTimeException() {
-        String key = "age";
-        client.add("name", "foo", 1);
-        client.add(key, 30, 1);
-        client.add(key, "fifteen", 1);
-        client.add("name", "bar", 2);
-        client.add(key, 15, 2);
-        client.calculate().max(key, Timestamp.now());
     }
 }
