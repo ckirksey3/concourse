@@ -859,16 +859,7 @@ public class ConcourseServer extends BaseConcourseServer
             atomic = store.startAtomicOperation();
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key);
-                int size = data.size();
-                int c = 0;
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    if(c == size - 1) {
-                        TObject tobject = entry.getKey();
-                        max = tobject;
-                        break;
-                    }
-                    c++;
-                }
+                max = Iterables.getLast(data.keySet(), max);
             }
             catch (AtomicStateException e) {
                 atomic = null;
@@ -891,16 +882,7 @@ public class ConcourseServer extends BaseConcourseServer
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key,
                         NaturalLanguage.parseMicros(timestamp));
-                int size = data.size();
-                int c = 0;
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    if(c == size - 1) {
-                        TObject tobject = entry.getKey();
-                        max = tobject;
-                        break;
-                    }
-                    c++;
-                }
+                max = Iterables.getLast(data.keySet(), max);
             }
             catch (AtomicStateException e) {
                 atomic = null;
@@ -1241,16 +1223,7 @@ public class ConcourseServer extends BaseConcourseServer
             atomic = store.startAtomicOperation();
             try {
                 Map<TObject, Set<Long>> data = atomic.browse(key, timestamp);
-                int size = data.size();
-                int c = 0;
-                for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-                    if(c == size - 1) {
-                        TObject tobject = entry.getKey();
-                        max = tobject;
-                        break;
-                    }
-                    c++;
-                }
+                max = Iterables.getLast(data.keySet(), max);
             }
             catch (AtomicStateException e) {
                 atomic = null;
