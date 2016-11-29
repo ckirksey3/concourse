@@ -603,21 +603,6 @@ final class Operations {
 
     /**
      * Join the {@link AtomicOperation atomic} operation to compute the max
-     * across the {@code key} at {@code timestamp}.
-     * 
-     * @param key the field name
-     * @param timestamp the selection timestamp
-     * @param atomic the {@link AtomicOperation} to join
-     * @return the max
-     */
-    public static Number maxKeyAtomic(String key, long timestamp,
-            AtomicOperation atomic) {
-        return calculateKeyAtomic(key, timestamp, Long.MIN_VALUE, atomic,
-                Calculations.maxKey());
-    }
-
-    /**
-     * Join the {@link AtomicOperation atomic} operation to compute the max
      * across all the values stored for {@code key} in {@code record} at
      * {@code timestamp}.
      * 

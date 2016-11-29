@@ -46,18 +46,6 @@ public final class Calculations {
     }
     
     /**
-     * Return the canonical {@link KeyCalculation calculation} for finding the
-     * max over an entire field.
-     * 
-     * @return the function
-     */
-    public static KeyCalculation maxKey() {
-        return (running, value, records) -> {
-            return Numbers.max(running, value);
-        };
-    }
-    
-    /**
      * Return the canonical {@link KeyRecordCalculation} for finding the max
      * over all the values store for a key in a record.
      * 
