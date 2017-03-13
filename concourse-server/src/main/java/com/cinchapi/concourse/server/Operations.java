@@ -91,6 +91,95 @@ final class Operations {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Use the provided {@code atomic} operation to add each of the values
+     * stored across {@code key} at {@code timestamp} to the running
+     * {@code sum}.
+     * 
+     * @param key the field name
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to use
+     * @return the new running sum
+     */
+    public static Number avgKeyAtomic(String key, long timestamp,
+            AtomicOperation atomic) {
+        Map<TObject, Set<Long>> data = timestamp == Time.NONE
+                ? atomic.browse(key) : atomic.browse(key, timestamp);
+        Number avg = 0;
+        int count = 0;
+        for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
+            TObject tobject = entry.getKey();
+            Set<Long> records = entry.getValue();
+            Object value = Convert.thriftToJava(tobject);
+            Calculations.checkCalculatable(value);
+            Number number = (Number) value;
+            for(int i = 0; i < records.size(); ++i){
+                count++;
+                avg = Numbers.incrementalAverage(avg, number, count);
+            }
+        }
+        return avg;
+    }
+
+    /**
+     * Use the provided {@code atomic} operation to add each of the values in
+     * {@code key}/{@code record} at {@code timestamp} to the running
+     * {@code sum}.
+     * 
+     * @param key the field name
+     * @param record the record id
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to use
+     * @return the new running sum
+     */
+    public static Number avgKeyRecordAtomic(String key, long record,
+            long timestamp, AtomicOperation atomic) {
+        Set<TObject> values = timestamp == Time.NONE
+                ? atomic.select(key, record)
+                : atomic.select(key, record, timestamp);
+        Number sum = 0;
+        for (TObject value : values) {
+            Object object = Convert.thriftToJava(value);
+            Calculations.checkCalculatable(object);
+            Number number = (Number) object;
+            sum = Numbers.add(sum, number);
+        }
+        return Numbers.divide(sum, values.size());
+    }
+
+    /**
+     * Use the provided {@code atomic} operation to add each of the values
+     * stored for the
+     * {@code key} in each of the {@code records} at {@code timestamp}.
+     * 
+     * @param key the field name
+     * @param record the record id
+     * @param timestamp the selection timestamp
+     * @param atomic the {@link AtomicOperation} to use
+     * @return the new running sum
+     */
+    public static Number avgKeyRecordsAtomic(String key,
+            Collection<Long> records, long timestamp, AtomicOperation atomic) {
+        int count = 0;
+        Number avg = 0;
+        for (long record : records) {
+            Set<TObject> values = timestamp == Time.NONE
+                    ? atomic.select(key, record)
+                    : atomic.select(key, record, timestamp);
+            for (TObject value : values) {
+                Object object = Convert.thriftToJava(value);
+                Calculations.checkCalculatable(object);
+                Number number = (Number) object;
+                count++;
+                avg = Numbers.incrementalAverage(avg, number, count);
+            }
+        }
+        return avg;
+    }
+
+    /**
+>>>>>>> a5148e3... Fix bugs in the 'average' calculation method (#280)
      * Remove all the values mapped from the {@code key} in {@code record} using
      * the specified {@code atomic} operation.
      *
@@ -406,91 +495,6 @@ final class Operations {
                 atomic.add(key, value, record);
             }
         }
-    }
-
-    /**
-     * Use the provided {@code atomic} operation to add each of the values
-     * stored across {@code key} at {@code timestamp} to the running
-     * {@code sum}.
-     * 
-     * @param key the field name
-     * @param timestamp the selection timestamp
-     * @param atomic the {@link AtomicOperation} to use
-     * @return the new running sum
-     */
-    public static Number avgKeyAtomic(String key, long timestamp,
-            AtomicOperation atomic) {
-        Map<TObject, Set<Long>> data = timestamp == Time.NONE
-                ? atomic.browse(key) : atomic.browse(key, timestamp);
-        Number avg = 0;
-        int count = 0;
-        for (Entry<TObject, Set<Long>> entry : data.entrySet()) {
-            TObject tobject = entry.getKey();
-            Set<Long> records = entry.getValue();
-            Object value = Convert.thriftToJava(tobject);
-            Calculations.checkCalculatable(value);
-            Number number = (Number) value;
-            number = Numbers.multiply(number, records.size());
-            count += records.size();
-            avg = Numbers.incrementalAverage(avg, number, count);
-        }
-        return avg;
-    }
-
-    /**
-     * Use the provided {@code atomic} operation to add each of the values in
-     * {@code key}/{@code record} at {@code timestamp} to the running
-     * {@code sum}.
-     * 
-     * @param key the field name
-     * @param record the record id
-     * @param timestamp the selection timestamp
-     * @param atomic the {@link AtomicOperation} to use
-     * @return the new running sum
-     */
-    public static Number avgKeyRecordAtomic(String key, long record,
-            long timestamp, AtomicOperation atomic) {
-        Set<TObject> values = timestamp == Time.NONE
-                ? atomic.select(key, record)
-                : atomic.select(key, record, timestamp);
-        Number sum = 0;
-        for (TObject value : values) {
-            Object object = Convert.thriftToJava(value);
-            Calculations.checkCalculatable(object);
-            Number number = (Number) object;
-            sum = Numbers.add(sum, number);
-        }
-        return Numbers.divide(sum, values.size());
-    }
-
-    /**
-     * Use the provided {@code atomic} operation to add each of the values
-     * stored for the
-     * {@code key} in each of the {@code records} at {@code timestamp}.
-     * 
-     * @param key the field name
-     * @param record the record id
-     * @param timestamp the selection timestamp
-     * @param atomic the {@link AtomicOperation} to use
-     * @return the new running sum
-     */
-    public static Number avgKeyRecordsAtomic(String key,
-            Collection<Long> records, long timestamp, AtomicOperation atomic) {
-        int count = 0;
-        Number avg = 0;
-        for (long record : records) {
-            Set<TObject> values = timestamp == Time.NONE
-                    ? atomic.select(key, record)
-                    : atomic.select(key, record, timestamp);
-            for (TObject value : values) {
-                Object object = Convert.thriftToJava(value);
-                Calculations.checkCalculatable(object);
-                Number number = (Number) object;
-                count++;
-                avg = Numbers.incrementalAverage(avg, number, count);
-            }
-        }
-        return avg;
     }
 
     /**
